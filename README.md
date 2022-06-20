@@ -24,4 +24,4 @@ Recipe fields:
 - description: long recipe descripion. Text type.
 - dificulty: low, medium, high
 - created_at: date creation
-- update_at: update date. 
+- updated_at: update date. 
