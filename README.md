@@ -22,6 +22,6 @@ Recipe fields:
 - title: short description. String type.
 - ingredients: list of ingredients. String type.
 - description: long recipe descripion. Text type.
-- dificulty: low, medium, high
+- difficulty: low, medium, high
 - created_at: date creation
 - updated_at: update date. 
