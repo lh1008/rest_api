@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, select
 from sqlalchemy import Column, insert, Table, String, Text, DateTime
 from sqlalchemy.orm import declarative_base, Session
-from sqlalchemy.dialects.postgresql import UUID, JSON
+from sqlalchemy.dialects.postgresql import UUID
 import uuid
 import json
 
@@ -19,15 +19,21 @@ class Recipe(Base):
 	__tablename__ = 'recipes'
 
 	recipe_id =  Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-	info = Column(JSON, nullable=False)
+	title = Column(String(50), nullable=False)
+	ingredients = Column(String(), nullable=False)
+	description = Column(String(), nullable=False)
+	difficulty = Column(String(), nullable=False)
 	created_at = Column(DateTime(), nullable=False, default=datetime.now().isoformat())
 	updated_at = Column(DateTime(), nullable=False, default=datetime.now().isoformat())
 
-	def __init__(self, info):
-		self.info = info
-		
+	def __init__(self, title, ingredients, description, difficulty):
+		self.title = title
+		self.ingredients = ingredients
+		self.description = description
+		self.difficulty = difficulty
+
 	def __repr__(self):
-		return f'User(recipe_id={self.recipe_id!r}, info={self.info!r})'
+		return f'User(recipe_id={self.recipe_id!r}, title={self.title!r}, ingredients={self.ingredients!r}, description={self.description!r}), difficulty={self.difficulty!r}))'
 
 @app.route('/')
 def index():
@@ -39,9 +45,16 @@ def create_recipe():
 	with Session(engine) as session:
 		
 		data = request.json # body en la request lo transforma a diccionario 
-		info = json.dumps(data)
-		
-		sql = Recipe(info=info)
+		title = json.dumps(data['title'])
+		print(title)
+		ingredients = json.dumps(data['ingredients'])
+		print(ingredients)
+		description = json.dumps(data['description'])
+		print(description)
+		difficulty = json.dumps(data['difficulty'])
+		print(difficulty)
+
+		sql = Recipe(title=title, ingredients=ingredients, description=description, difficulty=difficulty)
 		session.add(sql)
 		session.commit()
 
@@ -51,7 +64,7 @@ def create_recipe():
 @app.route('/api/v0.1/recipes', methods=['GET'])
 def get_recipes():
 	with Session(engine) as session:
-		query = select([Recipe.recipe_id, Recipe.info])
+		query = select([Recipe.recipe_id, Recipe.title, Recipe.ingredients, Recipe.description, Recipe.difficulty, Recipe.created_at, Recipe.updated_at])
 		res = session.execute(query)
 		output = list()
 
